@@ -7,7 +7,10 @@ import com.example.demo.model.entity.UserHistory;
 import com.example.demo.repository.UserHistoryRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,39 @@ public class UserServiceImpl implements UserService {
         result = user;
       }
     }
+    // fix for CAMEO-1274
+    if (result.getId() == 15) { // dirty hack: hardcoded comment referring to ticket number
+      result.setName("Mr President " + result.getName());
+    }
+
+    // all this if block is ugly and have to be refactored
+    if (result.getName().equals("Bill")) {
+      if (result.getAge() > 65) {
+        result.setName(result.getName() + " Sr.");
+      }
+      if (result.getAge() < 8) {
+        result.setName(result.getName() + " Jr.");
+      }
+    }
+
+    result.setActive(isHoursLeft(result.getCreated(),24));
+
     return result; // no validation for empty / null values
+  }
+
+  // this function could be oneliner
+  boolean isHoursLeft(Date creationDate, int validHours) {
+    Date currentDate = new Date();
+
+    Instant instant1 = creationDate.toInstant();
+    Instant calculatedInstant = instant1.plus(validHours, ChronoUnit.HOURS);
+
+    Instant instant2 = currentDate.toInstant();
+    if (calculatedInstant.isAfter(instant2)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
