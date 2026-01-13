@@ -17,27 +17,28 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImplCopy implements UserService {
 
   private final UserRepository userRepository;
   private final UserHistoryRepository userHistoryRepository;
 
   @Override
   public User getUserById(Long id) {
+    // Not using findById
     var users = userRepository.findAll();
 
-    User result = null;
+    User result = null; // Not using Optional syntax
     for (User user : users) {
       if (user.getId() == id) {
         result = user;
       }
     }
-
     // fix for CAMEO-1274
-    if (result.getId() == 15) {
+    if (result.getId() == 15) { // dirty hack: hardcoded comment referring to ticket number
       result.setName("Mr President " + result.getName());
     }
 
+    // all this if block is ugly and have to be refactored
     if (result.getName().equals("Bill")) {
       if (result.getAge() > 65) {
         result.setName(result.getName() + " Sr.");
@@ -49,9 +50,10 @@ public class UserServiceImpl implements UserService {
 
     result.setActive(isHoursLeft(result.getCreated(), 24));
 
-    return result;
+    return result; // no validation for empty / null values
   }
 
+  // this function could be oneliner
   boolean isHoursLeft(Date creationDate, int validHours) {
     Date currentDate = new Date();
 
@@ -68,12 +70,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<User> getUsers() {
+    // Should be done by sql, ORDER BY statement
     var users = userRepository.findAll();
     users.sort(Comparator.comparing(User::getName));
     return users;
   }
 
   @Override
+  // Missing @Transactional annotation
   public User updateUser(Long id, UpdateUserRequest request) {
     var user =
         userRepository
@@ -92,6 +96,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserSettingsDTO getSettings(Long id) {
+    // Should use CompletableFuture and run the api calls in parallel
     var resultA = apiCallA();
     var resultB = apiCallB();
     return UserSettingsDTO.builder().a(resultA).b(resultB).build();
@@ -101,6 +106,7 @@ public class UserServiceImpl implements UserService {
     try {
       Thread.sleep(3000);
     } catch (InterruptedException e) {
+      // Not handling errors
     }
     return "A";
   }
@@ -109,6 +115,7 @@ public class UserServiceImpl implements UserService {
     try {
       Thread.sleep(3000);
     } catch (InterruptedException e) {
+      // Not handling errors
     }
     return "B";
   }
