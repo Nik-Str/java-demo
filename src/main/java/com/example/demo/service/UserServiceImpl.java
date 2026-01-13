@@ -92,12 +92,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserSettingsDTO getSettings(Long id) {
-    var resultA = apiCallA();
-    var resultB = apiCallB();
+    var resultA = getPreferredColors();
+    var resultB = getPreferredMaterials();
     return UserSettingsDTO.builder().a(resultA).b(resultB).build();
   }
 
-  private String apiCallA() {
+  private String getPreferredColors() {
     try {
       Thread.sleep(3000);
     } catch (InterruptedException e) {
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
     return "A";
   }
 
-  private String apiCallB() {
+  private String getPreferredMaterials() {
     try {
       Thread.sleep(3000);
     } catch (InterruptedException e) {
