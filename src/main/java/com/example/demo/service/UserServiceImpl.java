@@ -92,21 +92,23 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserSettingsDTO getSettings(Long id) {
-    var resultA = getPreferredColors();
-    var resultB = getPreferredMaterials();
+    var resultA = getPreferredColors(id);
+    var resultB = getPreferredMaterials(id);
     return UserSettingsDTO.builder().a(resultA).b(resultB).build();
   }
 
-  private String getPreferredColors() {
+  private String getPreferredColors(Long id) {
     try {
+      // api call
       Thread.sleep(3000);
     } catch (InterruptedException e) {
     }
     return "A";
   }
 
-  private String getPreferredMaterials() {
+  private String getPreferredMaterials(Long id) {
     try {
+      // api call
       Thread.sleep(3000);
     } catch (InterruptedException e) {
     }
